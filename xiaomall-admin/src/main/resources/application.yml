@@ -1,0 +1,23 @@
+
+#默认为开发环境
+spring:
+  profiles:
+    active: dev
+
+#mybatis配置
+mybatis:
+  mapper-locations:
+    - classpath:dao/*.xml
+    - classpath*:com/**/mapper/*.xml
+
+
+logging:
+  level:
+    root: info #日志配置DEBUG,INFO,WARN,ERROR
+    com.xiao.xiaomall: debug
+#  file: demo_log.log #配置日志生成路径
+#  path: /var/logs #配置日志文件名称
+
+#启动端口
+server:
+  port: 1001

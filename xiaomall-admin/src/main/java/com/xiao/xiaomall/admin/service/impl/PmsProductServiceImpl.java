@@ -4,11 +4,8 @@ import com.xiao.xiaomall.admin.dao.*;
 import com.xiao.xiaomall.admin.dto.PmsProductParam;
 import com.xiao.xiaomall.admin.dto.PmsProductResult;
 import com.xiao.xiaomall.admin.service.PmsProductService;
-import com.xiao.xiaomall.entity.PmsMemberPrice;
-import com.xiao.xiaomall.entity.PmsProduct;
-import com.xiao.xiaomall.entity.PmsProductLadder;
-import com.xiao.xiaomall.entity.PmsSkuStock;
-import com.xiao.xiaomall.mapper.PmsProductMapper;
+import com.xiao.xiaomall.entity.*;
+import com.xiao.xiaomall.mapper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +52,27 @@ public class PmsProductServiceImpl implements PmsProductService {
     @Autowired
     private PmsProductDao productDao;
 
+    @Autowired
+    private PmsMemberPriceMapper memberPriceMapper;
+
+    @Autowired
+    private PmsProductLadderMapper productLadderMapper;
+
+    @Autowired
+    private PmsProductFullReductionMapper productFullReductionMapper;
+
+    @Autowired
+    private PmsSkuStockMapper skuStockMapper;
+
+    @Autowired
+    private PmsProductAttributeValueMapper productAttributeValueMapper;
+
+    @Autowired
+    private CmsSubjectProductRelationMapper subjectProductRelationMapper;
+
+    @Autowired
+    private CmsPrefrenceAreaProductRelationMapper prefrenceAreaProductRelationMapper;
+
     /**
      *增加商品
      * */
@@ -88,11 +106,60 @@ public class PmsProductServiceImpl implements PmsProductService {
     }
 
     /**
-     *根据商品的编号去查询更新的信息
+     *根据商品的编号去查询商品信息
      **/
     @Override
     public PmsProductResult getUpdateInfo(Long id) {
         return productDao.getUpdateInfo(id);
+    }
+
+    /**
+     * 根据id去更新商品
+     * */
+    @Override
+    public int update(Long id, PmsProductParam productParam) {
+        int count;
+        PmsProduct product = productParam;
+        product.setId(id);
+        productMapper.updateByPrimaryKeySelective(product);
+        //会员价格（先根据id去查找，找到后删除，在添加）
+        PmsMemberPriceExample memberPriceExample = new PmsMemberPriceExample();
+        memberPriceExample.createCriteria().andProductIdEqualTo(id);
+        memberPriceMapper.deleteByExample(memberPriceExample);
+        relateAndInsertList(memberPriceDao,productParam.getMemberPriceList(),id);
+        //阶梯价格
+        PmsProductLadderExample productLadderExample = new PmsProductLadderExample();
+        productLadderExample.createCriteria().andProductIdEqualTo(id);
+        productLadderMapper.deleteByExample(productLadderExample);
+        relateAndInsertList(productLadderDao,productParam.getProductLadderList(),id);
+        //满减价格
+        PmsProductFullReductionExample productFullReductionExample = new PmsProductFullReductionExample();
+        productFullReductionExample.createCriteria().andProductIdEqualTo(id);
+        productFullReductionMapper.deleteByExample(productFullReductionExample);
+        relateAndInsertList(productFullReductionDao,productParam.getProductFullReductionList(),id);
+        //修改sku库存信息
+        PmsSkuStockExample skuStockExample = new PmsSkuStockExample();
+        skuStockExample.createCriteria().andProductIdEqualTo(id);
+        skuStockMapper.deleteByExample(skuStockExample);
+        handleSkuStockCode(productParam.getSkuStockList(),id);
+        relateAndInsertList(skuStockDao,productParam.getSkuStockList(),id);
+        //添加商品参数,添加自定义商品规格
+        PmsProductAttributeValueExample productAttributeValueExample = new PmsProductAttributeValueExample();
+        productAttributeValueExample.createCriteria().andProductIdEqualTo(id);
+        productAttributeValueMapper.deleteByExample(productAttributeValueExample);
+        relateAndInsertList(productAttributeValueDao,productParam.getProductAttributeValueList(),id);
+        //关联专题
+        CmsSubjectProductRelationExample subjectProductRelationExample = new CmsSubjectProductRelationExample();
+        subjectProductRelationExample.createCriteria().andProductIdEqualTo(id);
+        subjectProductRelationMapper.deleteByExample(subjectProductRelationExample);
+        relateAndInsertList(subjectProductRelationDao,productParam.getSubjectProductRelationList(),id);
+        //关联优选
+        CmsPrefrenceAreaProductRelationExample prefrenceAreaProductRelationExample = new CmsPrefrenceAreaProductRelationExample();
+        prefrenceAreaProductRelationExample.createCriteria().andProductIdEqualTo(id);
+        prefrenceAreaProductRelationMapper.deleteByExample(prefrenceAreaProductRelationExample);
+        relateAndInsertList(prefrenceAreaProductRelationDao,productParam.getPrefrenceAreaProductRelationList(),id);
+        count=1;
+        return count;
     }
 
     private void handleSkuStockCode(List<PmsSkuStock> skuStockList, Long productId) {

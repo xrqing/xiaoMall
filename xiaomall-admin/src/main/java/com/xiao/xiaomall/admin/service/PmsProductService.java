@@ -19,4 +19,9 @@ public interface PmsProductService {
      *根据商品的编号去查询更新的信息
      **/
     PmsProductResult getUpdateInfo(Long id);
+
+    /**
+     * 根据id去更新商品
+     * */
+    int update(Long id,PmsProductParam productParam);
 }

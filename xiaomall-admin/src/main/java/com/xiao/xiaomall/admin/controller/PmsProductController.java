@@ -34,10 +34,21 @@ public class PmsProductController {
     }
 
     @GetMapping("/updateInfo/{id}")
-    @ApiOperation(value = "根据商品的编号去查询更新的信息",notes = "根据商品的编号去查询更新的信息接口")
+    @ApiOperation(value = "根据商品的编号去查询信息",notes = "根据商品的编号去查询信息接口")
     public CommonResult<PmsProductResult> getUpdateInfo(@PathVariable Long id){
         PmsProductResult result = productService.getUpdateInfo(id);
         return CommonResult.success(result);
+    }
+
+    @PostMapping("/update/{id}")
+    @ApiOperation(value = "修改商品信息",notes = "修改商品信息接口")
+    public CommonResult update(@PathVariable Long id,@RequestBody PmsProductParam productParam){
+        int count = productService.update(id, productParam);
+        if (count>0){
+            return CommonResult.success(count);
+        }else{
+            return CommonResult.failed();
+        }
     }
 }
 

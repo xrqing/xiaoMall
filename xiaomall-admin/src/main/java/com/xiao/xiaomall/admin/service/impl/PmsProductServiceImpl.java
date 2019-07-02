@@ -1,7 +1,9 @@
 package com.xiao.xiaomall.admin.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.xiao.xiaomall.admin.dao.*;
 import com.xiao.xiaomall.admin.dto.PmsProductParam;
+import com.xiao.xiaomall.admin.dto.PmsProductQueryParam;
 import com.xiao.xiaomall.admin.dto.PmsProductResult;
 import com.xiao.xiaomall.admin.service.PmsProductService;
 import com.xiao.xiaomall.entity.*;
@@ -15,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -72,6 +75,9 @@ public class PmsProductServiceImpl implements PmsProductService {
 
     @Autowired
     private CmsPrefrenceAreaProductRelationMapper prefrenceAreaProductRelationMapper;
+
+    @Autowired
+    private PmsProductVertifyRecordDao productVertifyRecordDao;
 
     /**
      *增加商品
@@ -159,6 +165,60 @@ public class PmsProductServiceImpl implements PmsProductService {
         prefrenceAreaProductRelationMapper.deleteByExample(prefrenceAreaProductRelationExample);
         relateAndInsertList(prefrenceAreaProductRelationDao,productParam.getPrefrenceAreaProductRelationList(),id);
         count=1;
+        return count;
+    }
+
+    /**
+     *查询商品分页
+     * */
+    @Override
+    public List<PmsProduct> list(PmsProductQueryParam productQueryParam, Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageSize,pageNum);
+        PmsProductExample example = new PmsProductExample();
+        PmsProductExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteStatusEqualTo(0);
+        if (productQueryParam.getPublishStatus()!=null){
+            criteria.andPublishStatusEqualTo(productQueryParam.getPublishStatus());
+        }
+        if (productQueryParam.getVerifyStatus()!=null){
+            criteria.andVerifyStatusEqualTo(productQueryParam.getVerifyStatus());
+        }
+        if (!StringUtils.isEmpty(productQueryParam.getKeyword())){
+            criteria.andNameLike(""+productQueryParam.getKeyword()+"%");
+        }
+        if (!StringUtils.isEmpty(productQueryParam.getProductSn())){
+            criteria.andProductSnEqualTo(productQueryParam.getProductSn());
+        }
+        if (productQueryParam.getProductCategoryId()!=null){
+            criteria.andProductCategoryIdEqualTo(productQueryParam.getProductCategoryId());
+        }
+        if (productQueryParam.getBrandId()!=null){
+            criteria.andBrandIdEqualTo(productQueryParam.getBrandId());
+        }
+        return productMapper.selectByExample(example);
+    }
+
+    /**
+     *批量修改审核状态
+     * */
+    @Override
+    public int updateVerifyStatus(List<Long> ids, Integer verifyStatus, String detail) {
+        PmsProduct product = new PmsProduct();
+        product.setVerifyStatus(verifyStatus);
+        PmsProductExample productExample = new PmsProductExample();
+        productExample.createCriteria().andIdIn(ids);
+        List<PmsProductVertifyRecord> list = new ArrayList<>();
+        int count = productMapper.updateByExampleSelective(product, productExample);
+        for (Long id : ids) {
+            PmsProductVertifyRecord record = new PmsProductVertifyRecord();
+            record.setCreateTime(new Date());
+            record.setDetail(detail);
+            record.setVertifyMan("admin");
+            record.setProductId(id);
+            record.setStatus(verifyStatus);
+            list.add(record);
+        }
+        productVertifyRecordDao.insertList(list);
         return count;
     }
 

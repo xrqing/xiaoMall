@@ -11,6 +11,7 @@ import com.xiao.xiaomall.entity.PmsProduct;
 import com.xiao.xiaomall.mapper.PmsProductMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +71,46 @@ public class PmsProductController {
     @ApiOperation(value = "批量修改审核状态",notes = "批量修改审核状态接口")
     public CommonResult updateVerifyStatus(@RequestParam("ids") List<Long> ids,@RequestParam("verifyStatus") Integer verifyStatus, @RequestParam("detail") String detail){
         int count = productService.updateVerifyStatus(ids, verifyStatus, detail);
+        if (count>0){
+            return CommonResult.success(count);
+        }else{
+            return CommonResult.failed();
+        }
+    }
+
+    @GetMapping("/list/one")
+    @ApiOperation(value = "根据货号和商品名称查询",notes = "根据货号和商品名称查询接口")
+    public CommonResult<List<PmsProduct>> listOne(@RequestParam String keyword){
+        List<PmsProduct> productList = productService.listOne(keyword);
+        return CommonResult.success(productList);
+    }
+
+    @PostMapping("/update/recommendStatus")
+    @ApiOperation(value = "批量推荐修改状态",notes = "批量修改推荐状态接口")
+    public CommonResult updateRecommandStatus(@RequestParam("ids") List<Long> ids,Integer recommandStatus){
+        int count = productService.updateRecommandStatus(ids, recommandStatus);
+        if (count>0){
+            return CommonResult.success(count);
+        }else{
+            return CommonResult.failed();
+        }
+    }
+
+    @PostMapping("/update/newStatus")
+    @ApiOperation(value = "批量修改新品状态",notes = "批量修改新品状态接口")
+    public CommonResult updateNewStatus(@RequestParam("ids") List<Long> ids,Integer newStatus){
+        int count = productService.updateNewStatus(ids, newStatus);
+        if (count>0){
+            return CommonResult.success(count);
+        }else{
+            return CommonResult.failed();
+        }
+    }
+
+    @ApiOperation(value = "批量删除",notes = "批量删除接口")
+    @PostMapping("/delete/all")
+    public CommonResult deleteAll(@RequestParam("ids") List<Long> ids, Integer deleteStatus){
+        int count = productService.deleteAll(ids, deleteStatus);
         if (count>0){
             return CommonResult.success(count);
         }else{

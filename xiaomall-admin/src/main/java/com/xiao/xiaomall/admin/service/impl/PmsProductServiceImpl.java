@@ -222,6 +222,57 @@ public class PmsProductServiceImpl implements PmsProductService {
         return count;
     }
 
+    /**
+     *根据货号和商品名称查询
+     * */
+    @Override
+    public List<PmsProduct> listOne(String keyword) {
+        PmsProductExample example = new PmsProductExample();
+        PmsProductExample.Criteria criteria = example.createCriteria();
+        criteria.andDeleteStatusEqualTo(0);//未删除状态才能查询
+        if (!StringUtils.isEmpty(keyword)){
+            criteria.andNameLike("%"+keyword+"%");
+            example.or().andDeleteStatusEqualTo(0).andProductSnLike("%"+keyword+"%");//未删除状态才能查询
+        }
+        return productMapper.selectByExample(example);
+    }
+
+    /**
+     * 批量修改推荐状态
+     * */
+    @Override
+    public int updateRecommandStatus(List<Long> ids, Integer recommandStatus) {
+        PmsProduct product = new PmsProduct();
+        product.setRecommandStatus(recommandStatus);
+        PmsProductExample example = new PmsProductExample();
+        example.createCriteria().andIdIn(ids);
+        return productMapper.updateByExampleSelective(product,example);
+    }
+
+    /**
+     *批量修改新品状态
+     * */
+    @Override
+    public int updateNewStatus(List<Long> ids, Integer newStatus) {
+        PmsProduct product = new PmsProduct();
+        product.setNewStatus(newStatus);
+        PmsProductExample example = new PmsProductExample();
+        example.createCriteria().andIdIn(ids);
+        return productMapper.updateByExampleSelective(product,example);
+    }
+
+    /**
+     *批量删除
+     * */
+    @Override
+    public int deleteAll(List<Long> ids,Integer deleteStatus) {
+        PmsProduct product = new PmsProduct();
+        product.setDeleteStatus(deleteStatus);
+        PmsProductExample example = new PmsProductExample();
+        example.createCriteria().andIdIn(ids);
+        return productMapper.updateByExampleSelective(product,example);
+    }
+
     private void handleSkuStockCode(List<PmsSkuStock> skuStockList, Long productId) {
         if(CollectionUtils.isEmpty(skuStockList))return;
         for(int i=0;i<skuStockList.size();i++){

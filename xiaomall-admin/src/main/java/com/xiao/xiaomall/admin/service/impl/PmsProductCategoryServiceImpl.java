@@ -2,7 +2,9 @@ package com.xiao.xiaomall.admin.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.xiao.xiaomall.admin.dao.PmsProductCategoryAttributeRelationDao;
+import com.xiao.xiaomall.admin.dao.PmsProductCategoryDao;
 import com.xiao.xiaomall.admin.dto.PmsProductCategoryParam;
+import com.xiao.xiaomall.admin.dto.PmsProductCategoryWithChildrenItem;
 import com.xiao.xiaomall.admin.service.PmsProductCategoryService;
 import com.xiao.xiaomall.entity.*;
 import com.xiao.xiaomall.mapper.PmsProductCategoryAttributeRelationMapper;
@@ -34,6 +36,9 @@ public class PmsProductCategoryServiceImpl implements PmsProductCategoryService 
 
     @Autowired
     private PmsProductCategoryAttributeRelationMapper productCategoryAttributeRelationMapper;
+
+    @Autowired
+    private PmsProductCategoryDao productCategoryDao;
 
     /**
      *增加商品分类
@@ -133,6 +138,14 @@ public class PmsProductCategoryServiceImpl implements PmsProductCategoryService 
         PmsProductCategoryExample example = new PmsProductCategoryExample();
         example.createCriteria().andIdIn(ids);
         return productCategoryMapper.updateByExampleSelective(productCategory,example);
+    }
+
+    /**
+     *查询一级及子分类
+     * */
+    @Override
+    public List<PmsProductCategoryWithChildrenItem> listWithChildren() {
+        return productCategoryDao.listWithChildren();
     }
 
     /**

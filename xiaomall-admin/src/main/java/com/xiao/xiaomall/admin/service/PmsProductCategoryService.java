@@ -1,6 +1,7 @@
 package com.xiao.xiaomall.admin.service;
 
 import com.xiao.xiaomall.admin.dto.PmsProductCategoryParam;
+import com.xiao.xiaomall.admin.dto.PmsProductCategoryWithChildrenItem;
 import com.xiao.xiaomall.entity.PmsProductCategory;
 import io.swagger.models.auth.In;
 
@@ -46,4 +47,9 @@ public interface PmsProductCategoryService {
      *批量修改显示状态
      * */
     int updateShowStatus(List<Long> ids,Integer showStatus);
+
+    /**
+     *查询一级及子分类
+     * */
+    List<PmsProductCategoryWithChildrenItem> listWithChildren();
 }

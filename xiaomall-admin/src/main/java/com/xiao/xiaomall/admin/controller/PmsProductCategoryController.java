@@ -1,6 +1,7 @@
 package com.xiao.xiaomall.admin.controller;
 
 import com.xiao.xiaomall.admin.dto.PmsProductCategoryParam;
+import com.xiao.xiaomall.admin.dto.PmsProductCategoryWithChildrenItem;
 import com.xiao.xiaomall.admin.service.PmsProductCategoryService;
 import com.xiao.xiaomall.api.CommonPage;
 import com.xiao.xiaomall.api.CommonResult;
@@ -93,5 +94,12 @@ public class PmsProductCategoryController {
         }else{
             return CommonResult.failed();
         }
+    }
+
+    @GetMapping("/list/withChildren")
+    @ApiOperation(value = "查询一级及子分类",notes = "查询一级及子分类接口")
+    public CommonResult<List<PmsProductCategoryWithChildrenItem>> listWithChildren(){
+        List<PmsProductCategoryWithChildrenItem> list = productCategoryService.listWithChildren();
+        return CommonResult.success(list);
     }
 }

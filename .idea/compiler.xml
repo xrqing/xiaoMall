@@ -9,9 +9,11 @@
         <module name="xiaomall-admin" />
         <module name="xiaomall-common" />
         <module name="xiaomall-mgb" />
+        <module name="xiaomall-search" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="search" target="1.8" />
       <module name="xiaomall-mbg" target="1.8" />
     </bytecodeTargetLevel>
   </component>

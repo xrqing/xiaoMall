@@ -13,6 +13,7 @@
         <module>xiaomall-admin</module>
         <module>xiaomall-common</module>
         <module>xiaomall-mgb</module>
+        <module>xiaomall-search</module>
     </modules>
 
     <parent>

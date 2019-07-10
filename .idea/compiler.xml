@@ -9,6 +9,7 @@
         <module name="xiaomall-admin" />
         <module name="xiaomall-common" />
         <module name="xiaomall-mgb" />
+        <module name="xiaomall-protal" />
         <module name="xiaomall-search" />
       </profile>
     </annotationProcessing>

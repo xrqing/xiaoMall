@@ -2,6 +2,7 @@ package com.xiao.xiaomall.protal.service.impl;
 
 
 
+import com.github.pagehelper.PageHelper;
 import com.xiao.xiaomall.entity.*;
 import com.xiao.xiaomall.mapper.*;
 import com.xiao.xiaomall.protal.dao.HomeDao;
@@ -65,6 +66,43 @@ public class HomeServiceImpl implements HomeService {
         //获取专题推荐
         result.setSubjectList(homeDao.getRecommendSubjectList(0,4));
         return result;
+    }
+
+    /**
+     *首页商品推荐
+     * */
+    @Override
+    public List<PmsProduct> recommendProductList(Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageSize,pageNum);
+        PmsProductExample example = new PmsProductExample();
+        example.createCriteria().andDeleteStatusEqualTo(0).andPublishStatusEqualTo(1);
+        return productMapper.selectByExample(example);
+    }
+
+    /**
+     * 获取商品的分类
+     * */
+    @Override
+    public List<PmsProductCategory> getProductCateList(Long parentId) {
+        PmsProductCategoryExample example = new PmsProductCategoryExample();
+        example.createCriteria().andShowStatusEqualTo(1).andParentIdEqualTo(parentId);
+        example.setOrderByClause("sort desc");
+        return productCategoryMapper.selectByExample(example);
+    }
+
+    /**
+     * 根据专题分类分页获取专题
+     * */
+    @Override
+    public List<CmsSubject> getSubjectList(Long categoryId, Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageSize,pageNum);
+        CmsSubjectExample example = new CmsSubjectExample();
+        CmsSubjectExample.Criteria criteria = example.createCriteria();
+        criteria.andShowStatusEqualTo(1);
+        if (categoryId!=null){
+            criteria.andCategoryIdEqualTo(categoryId);
+        }
+        return subjectMapper.selectByExample(example);
     }
 
     //获取首页广告

@@ -5,7 +5,7 @@ import com.xiao.xiaomall.entity.OmsOrderReturnReason;
 import java.util.List;
 
 /**
- *订单退货原因  service
+ *订单退货原因 service
  **/
 public interface OmsOrderReturnReasonService {
 

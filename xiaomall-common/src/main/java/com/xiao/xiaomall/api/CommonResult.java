@@ -1,7 +1,4 @@
-package com.xiao.xiaomall.api;/*
-@auther XiaoRuiQing
-@Date 2019/5/22
-*/
+package com.xiao.xiaomall.api;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

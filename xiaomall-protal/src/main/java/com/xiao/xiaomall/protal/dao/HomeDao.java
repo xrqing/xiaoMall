@@ -5,7 +5,6 @@ import com.xiao.xiaomall.entity.PmsBrand;
 import com.xiao.xiaomall.entity.PmsProduct;
 import com.xiao.xiaomall.protal.domain.FlashPromotionProduct;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
 
 /**

@@ -1,26 +1,25 @@
 
-#默认为开发环境
 spring:
   profiles:
     active: dev
 
-#mybatis配置
+
 mybatis:
   mapper-locations:
   - classpath:dao/*.xml
   - classpath*:com/**/mapper/*.xml
 
 
-# 自定义redis key
+
 #redis:
 #  key:
 #    prefix:
-#      authCode: "portal:authCode:"
-#      orderId: "portal:orderId:"
+#      authCode: "protal:authCode:"
+#      orderId: "protal:orderId:"
 #    expire:
-#      authCode: 90 # 验证码超期时间
+#      authCode: 90
 
-#启动端口
+
 server:
   port: 2001
 
